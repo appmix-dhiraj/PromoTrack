@@ -20,10 +20,15 @@ function bartik_preprocess_html(&$variables) {
     || !empty($variables['page']['footer_fourthcolumn'])) {
     $variables['classes_array'][] = 'footer-columns';
   }
-
+  global $user;
   // Add conditional stylesheets for IE
   drupal_add_css(path_to_theme() . '/css/ie.css', array('group' => CSS_THEME, 'browsers' => array('IE' => 'lte IE 7', '!IE' => FALSE), 'preprocess' => FALSE));
-   drupal_add_css(path_to_theme() . '/css/style-login.css', array('group' => CSS_THEME, 'preprocess' => FALSE));
+   if($user->uid!=0){
+   drupal_add_css(path_to_theme() . '/css/style-newtheme.css', array('group' => CSS_THEME, 'preprocess' => FALSE));
+   }
+	else {
+	drupal_add_css(path_to_theme() . '/css/style-login.css', array('group' => CSS_THEME, 'preprocess' => FALSE));
+  }	
   drupal_add_css(path_to_theme() . '/css/ie6.css', array('group' => CSS_THEME, 'browsers' => array('IE' => 'IE 6', '!IE' => FALSE), 'preprocess' => FALSE));
 }
 
@@ -172,10 +177,18 @@ function bartik_theme() {
     'path' => drupal_get_path('theme', 'bartik') . '/templates',
     'template' => 'user-register-form',
     'preprocess functions' => array(
-      'bartik_preprocess_user_register_form'
+    'bartik_preprocess_user_register_form'
     ),
   );
- 
+
+$items['wbn_welcome_edit_form'] = array(
+    'render element' => 'form',
+    'path' => drupal_get_path('theme', 'bartik') . '/templates',
+    'template' => 'wbn_welcome_edit_form',
+    'preprocess functions' => array(
+    'bartik_preprocess_welcome'
+    ),
+  );
   return $items;
 }
 
