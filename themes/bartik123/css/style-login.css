@@ -1,0 +1,65 @@
+@charset "utf-8";
+/* CSS Document */
+
+* {margin:0 auto; padding:0 ;}
+header, nav, section, aside, footer {display:block}
+
+#mainContainer { width:948px; height:700px; background:#fff;}
+#headerDiv {width:1020px; background:#fff; float:none; height:75px;}
+h1.logo span.leftLogo a{background: url(../images/logo.jpg) ; width:198px; height:58px; text-indent:-4000px; display:block; }
+h1.logo span.leftLogo {float:left; padding:8px;}
+#contanerformL {	width: 750px;	height: 564px; background-color: #fff;}
+.formcontainerL {width:720px; height:540px; background:#fff;}
+.bg_shadow {
+	background-image: url(../images/shadow_top.jpg);
+	background-repeat: no-repeat;
+	background-position: center bottom;
+}
+.login_box {
+	background-image: url(../images/loginbox.png);
+	background-repeat: no-repeat;
+	background-position: center top;
+	width: 530px; height:319px;
+}
+.bg_shadow_botom {
+	background-image: url(../images/shadow_botom.jpg);
+	background-repeat: no-repeat;
+	background-position: center top;}
+.punch_login {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 24px;
+	font-style: normal;
+	font-weight: bold;
+	color: #295A34;
+}
+.doted_line {
+	border-top-width: thin;
+	border-top-style: solid;
+	border-right-style: none;
+	border-bottom-style: none;
+	border-left-style: none;
+	border-top-color: #295A34;
+}
+.butt_login {
+	background-image: url(../images/loginbutton.png);
+	background-repeat: no-repeat;
+	background-position: left top;
+	height: 32px;
+	width: 89px;
+}
+
+
+
+#letering {margin:10px; padding:10px; list-style-type: none; float:left;}
+.punchline { font:Arial, Helvetica, sans-serif; font-size: 24px; font-weight:bold; color:#000000;text-shadow:0px 1px 1px #999999; padding:10px 0px 0px 14px ; display:block;width:100%;}
+.letering { font-family:Arial, Helvetica, sans-serif; font-size:20px; font-weight:normal; color: #000000; text-shadow:0px 1px 1px #999999; padding:10px 0px 0px 15px ; display:block; }
+#formbox { width:700px; height:500px; background:#009;} 
+.username {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 16px;
+	font-style: normal;
+	font-weight: normal;
+	color: #060;
+}
+.note{color: #000000;font-size:13px;}
+
