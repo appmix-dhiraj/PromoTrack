@@ -4,8 +4,8 @@
 * {margin:0 auto; padding:0 ;}
 header, nav, section, aside, footer {display:block}
 
-#mainContainer { width:900px; height:auto; background:#fff;}
-#headerDiv {width:1000px; background:#fff; float:none; height:75px;}
+#mainContainer { width:948px; height:700px; background:#fff;}
+#headerDiv {width:1020px; background:#fff; float:none; height:75px;}
 h1.logo span.leftLogo a{background: url(../images/logo.jpg) ; width:198px; height:58px; text-indent:-4000px; display:block; }
 h1.logo span.leftLogo {float:left; padding:8px;}
 #contanerformL {	width: 750px;	height: 564px; background-color: #fff;}
@@ -31,7 +31,7 @@ h1.logo span.leftLogo {float:left; padding:8px;}
 	background-image: url(../images/loginbox_03.gif);
 	background-repeat: no-repeat;
 	background-position: center top;
-	width: 530px;height:77px;
+	width: 530px;height:100px;
 }
 .bg_shadow_botom {
 	background-image: url(../images/shadow_botom.jpg);
@@ -58,8 +58,9 @@ h1.logo span.leftLogo {float:left; padding:8px;}
 	background-position: left top;
 	height: 32px;
 	width: 89px;
-	border: 0px;
 }
+
+
 
 #letering {margin:10px; padding:10px; list-style-type: none; float:left;}
 .punchline { font:Arial, Helvetica, sans-serif; font-size: 24px; font-weight:bold; color:#000000;text-shadow:0px 1px 1px #999999; padding:10px 0px 0px 14px ; display:block;width:100%;}
@@ -73,9 +74,12 @@ h1.logo span.leftLogo {float:left; padding:8px;}
 	color: #060;
 }
 .note{color: #000000;font-size:13px;}
-table, caption, tbody, tfoot, thead, tr, th, td {    
-    border: 0;  width:80%;
+table, caption, tbody, tfoot, thead, tr, th, td {
+    
+    border: 0;
+    
+   
+    width:80%;
 }
-
 
 

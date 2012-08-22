@@ -3,16 +3,15 @@
  * Implements hook_menu()
  */
 function wbn_menu() {
-	$items = array();
-  	$items['welcome'] = array(
+$items = array();
+  $items['welcome'] = array(
     'title' => '',
     'page callback' => 'drupal_get_form', 
     'page arguments' => array('wbn_welcome_edit_form'),
     'access callback' => TRUE,
   );
-  	return $items;
+  return $items;
 }
-
 
 function user_list() {
 	$query = db_select('users', 'u');
@@ -23,34 +22,33 @@ function user_list() {
 
 function wbn_welcome_edit_form($form, &$form_submit) { 
 	global $user;
-	$uaccess = $user->roles;
-	if (isset($uaccess[1]) && $uaccess[1] == 'anonymous user' ) drupal_goto('myaccount');
 	$ulist = user_list();
+//echo '<pre>',print_r($user),'</pre>';
 	$roles = user_roles();
+
 	$userroles['0'] = 'Select Role';
 	foreach ($ulist as $item) {
 		$key = $item->uid;
-		$value = $item->name;		
+		$value = $item->name;
+		
 		$dropdown_array[$key] = $value;
 	}
 	foreach ($roles as $k=>$v) {
 		if($v!='anonymous user' && $v!='administrator')	{	
-			if($v=='authenticated user') $v = 'B&N User';		
+			if($v=='authenticated user') $v='Default Users';		
 			$userroles[$k] = $v;
 		}
 	}
+	
 	$dropdown_array['0'] = 'Select User';
 	
 	if(isset($user->name) && $user->name != '' ) {
 	  $user_roles = array_values($user->roles); 
 	  if(isset($user_roles[1])) $urole=$user_roles[1];
-	  else $urole='B&N User';
-	  $pre = 'a' ;
-	  $flett = substr($urole,0,1);
-	  if(strtolower($flett) == 'a') $pre ='an';		
-	  $form['welcome'] = array(
+	  else $urole='Default ';//$user_roles[0];	
+	  $form[] = array(
 		'#type' => 'item',
-		'#markup' => t('<BR>Welcome '.$user->name.'. <BR><BR>You are '.$pre.' '.$urole.', here are your options:'    
+		'#markup' => t('<BR>Welcome '.$user->name.'. <BR><BR> You are logged in as a '.$urole.' user.'    
 		),
 	  );
 	}
@@ -70,7 +68,6 @@ function wbn_welcome_edit_form($form, &$form_submit) {
 	  '#options' => $dropdown_array,
 	  '#title' => 'Username',
 	);
-
 	$form['filterset1']['userroles'] = array(
 	  '#weight' => '4',
 	  '#key_type' => 'associative',
@@ -83,40 +80,16 @@ function wbn_welcome_edit_form($form, &$form_submit) {
 	  '#suffix' => '</div>', 
 	);
 	
-    $form['submit'] = array(
-    '#type' => 'submit',
+    	$form['submit'] = array(
+    	'#type' => 'submit',
    	'#value' => t('Save Changes'),
-	'#prefix' => '<div style="margin-left:130px;">',
+	'#prefix' => '<div class="poll-form" style="margin-left:130px;">',
 	'#suffix' => '</div>', 
-	'#class'=>'butt_save',
   	);
-    }	
+    }
+
   return $form;
 }
-
-
-
-function theme_preprocess_welcome(&$variables) { 
-	$ulist = user_list();
-	$roles = user_roles();
-	global $user;
-	foreach ($ulist as $item) {
-		$key = $item->uid;
-		$value = $item->name;		
-		$userlist[$key] = $value;
-	}
-
-	foreach ($roles as $k=>$v) {
-		if($v!='anonymous user' && $v!='administrator')	{	
-			if($v=='authenticated user') $v='Default Users';		
-			$userroles[$k] = $v;
-		}
-	}
-	$variables['user'] = $user;	
-	$variables['ulist'] = $userlist;
-	$variables['roles'] = $userroles;
-}
-
 
 function check_role_exists($userid) {
 	$query = db_select('users_roles', 'u');
@@ -125,8 +98,8 @@ function check_role_exists($userid) {
 	$results = $query->execute();	
 	return $results->rowCount();
 }
-
 function wbn_welcome_edit_form_validate($form, &$form_submit) {
+
   if ($form_submit['values']['username'] == 0) {
     form_set_error('username', t('You must select a username.'));
   }
@@ -136,11 +109,13 @@ function wbn_welcome_edit_form_validate($form, &$form_submit) {
 }
 
 function wbn_welcome_edit_form_submit($form, &$form_submit) {
+	
 	$userrole = $form_submit['values']['userroles'];
 	$userid   = $form_submit['values']['username'];
 	$check = check_role_exists($userid);
 	if($check>0) {
-	db_query("update {users_roles} set rid='$userrole' where uid='$userid'") ;
+	db_query("update {users_roles} set rid='$userrole' where uid='$userid'");
+
 	}
 	else {
 	db_insert('users_roles') // Table name no longer needs {}

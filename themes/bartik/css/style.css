@@ -1094,7 +1094,8 @@ div.password-confirm {
 
 input.form-submit,
  /*a.button {
- background: #fff url(../images/buttons.png) 0 0 repeat-x; 
+ background: #fff url(../images/buttons.png) 0 0 repeat-x;
+ 
   border: 1px solid #e4e4e4;
   border-bottom: 1px solid #b4b4b4;
   border-left-color: #d2d2d2;
@@ -1275,9 +1276,8 @@ input.form-submit:focus {
   margin-top: 2px;
 }
 .form-item label {
-  /*font-size: 0.929em;*/
- font-size: 1.1em;	
- width:130px;float:left;
+  font-size: 0.929em;
+  width:130px;float:left;
 }
 .form-type-radio label,
 .form-type-checkbox label {
@@ -1671,10 +1671,10 @@ div.admin-panel .description {
 .poll .bar .foreground {
   background-color: #666;
 }
-/*#footer-wrapper .poll .bar {
+#footer-wrapper .poll .bar {
   background-color: #666;
 }
 #footer-wrapper .poll .bar .foreground {
   background-color: #ddd;
-}*/
-table.logintable{border:0px;padding:0px;}
+}
+table.logintable{border:0px;}

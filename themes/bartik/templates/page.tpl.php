@@ -27,7 +27,7 @@
  * - $site_name: The name of the site, empty when display has been disabled
  *   in theme settings.
  * - $site_slogan: The slogan of the site, empty when display has been disabled
- *   in theme settings.<?php if($user->uid!=0):?>
+ *   in theme settings.
  * - $hide_site_name: TRUE if the site name has been toggled off on the theme
  *   settings page. If hidden, the "element-invisible" class is added to make
  *   the site name visually hidden, but still accessible.
@@ -85,74 +85,165 @@
  * @see html.tpl.php
  */
 ?>
-<script type="text/javascript">
-function MM_preloadImages() { //v3.0
-  var d=document; if(d.images){ if(!d.MM_p) d.MM_p=new Array();
-    var i,j=d.MM_p.length,a=MM_preloadImages.arguments; for(i=0; i<a.length; i++)
-    if (a[i].indexOf("#")!=0){ d.MM_p[j]=new Image; d.MM_p[j++].src=a[i];}}
-}
-function MM_swapImgRestore() { //v3.0
-  var i,x,a=document.MM_sr; for(i=0;a&&i<a.length&&(x=a[i])&&x.oSrc;i++) x.src=x.oSrc;
-}
-function MM_findObj(n, d) { //v4.01
-  var p,i,x;  if(!d) d=document; if((p=n.indexOf("?"))>0&&parent.frames.length) {
-    d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);}
-  if(!(x=d[n])&&d.all) x=d.all[n]; for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n];
-  for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=MM_findObj(n,d.layers[i].document);
-  if(!x && d.getElementById) x=d.getElementById(n); return x;
-}
-function MM_swapImage() { //v3.0
-  var i,j=0,x,a=MM_swapImage.arguments; document.MM_sr=new Array; for(i=0;i<(a.length-2);i+=3)
-   if ((x=MM_findObj(a[i]))!=null){document.MM_sr[j++]=x; if(!x.oSrc) x.oSrc=x.src; x.src=a[i+2];}
-}
-</script>
-<div id="mainDiv">
-  	<!-- Header Code Starts From Here -->
-<div id="headerDiv">
- 	<div class="logo">
-		 <?php if ($logo): ?>
-			<span><a href="<?php print $front_page; ?>" title="<?php print t('Home'); ?>" rel="home" id="logo">
-			<?php if($user->uid!=0) $logoimg=$logo; 
-				else $logoimg=path_to_theme().'/images/'.'logo_login.jpg';?>				
-			<img src="<?php print $logoimg; ?>" alt="Barnes& Noble" title="Barnes& Noble" /></a></span>
-		 <?php endif; ?>
-		 <?php if($user->uid != 0 ) : ?>
- 			<div class="headTopLft" style='width:135px;'><a href='?q=welcome'>Home</a> | <a href='?q=user/logout'>Logout</a></div>
-		 <?php endif;?>
- 	</div>
- 	<br class="spacer" />
-	<?php  if($user->uid != 0 ) : ?>
-  	<div class="menuTop">
-      	<table width="650" border="0" align="right" cellpadding="0" cellspacing="0">
-      		<tr>
-				<!--td><div class='ubercolortabs'>
-					<ul>
-						<li><a href=''>Home</a></li>
-					 
-					</ul></div>
-				</td-->
-      			<td><a href="?q=welcome" onmouseout="MM_swapImgRestore()" onmouseover="MM_swapImage('home','','<?php echo path_to_theme()?>/images/home_role.png',1)"><img src="<?php echo path_to_theme()?>/images/home.png" alt="home" width="127" height="40" id="home" /></a></td>      			
-     		</tr>
-     	</table></div>
-	
-	<?php endif;?>
-</div>
-  <br class="spacer" />
-    <div id="contentDiv" style='margin-top:-6px;'>
-	<?php if ($breadcrumb): ?>
-      <div id="breadcrumb"><?php print $breadcrumb; ?></div>
+<div id="page-wrapper"><div id="page">
+
+  <div id="header" class="<?php print $secondary_menu ? 'with-secondary-menu': 'without-secondary-menu'; ?>"><div class="section clearfix">
+
+    <?php if ($logo): ?>
+      <a href="<?php print $front_page; ?>" title="<?php print t('Home'); ?>" rel="home" id="logo">
+        <img src="<?php print $logo; ?>" alt="<?php print t('Home'); ?>" />
+      </a>
     <?php endif; ?>
-	<?php if ($messages && $_GET['q']!='user' ): ?>
-    <div id="messages" style='margin-left:100px;'><div class="section clearfix">
+
+    <?php if ($site_name || $site_slogan): ?>
+      <div id="name-and-slogan"<?php if ($hide_site_name && $hide_site_slogan) { print ' class="element-invisible"'; } ?>>
+
+        <?php if ($site_name): ?>
+          <?php if ($title): ?>
+            <div id="site-name"<?php if ($hide_site_name) { print ' class="element-invisible"'; } ?>>
+              <strong>
+                <a href="<?php print $front_page; ?>" title="<?php print t('Home'); ?>" rel="home"><span><?php print $site_name; ?></span></a>
+              </strong>
+            </div>
+          <?php else: /* Use h1 when the content title is empty */ ?>
+            <h1 id="site-name"<?php if ($hide_site_name) { print ' class="element-invisible"'; } ?>>
+              <a href="<?php print $front_page; ?>" title="<?php print t('Home'); ?>" rel="home"><span><?php print $site_name; ?></span></a>
+            </h1>
+          <?php endif; ?>
+        <?php endif; ?>
+
+        <?php if ($site_slogan): ?>
+          <div id="site-slogan"<?php if ($hide_site_slogan) { print ' class="element-invisible"'; } ?>>
+            <?php print $site_slogan; ?>
+          </div>
+        <?php endif; ?>
+
+      </div> <!-- /#name-and-slogan -->
+    <?php endif; ?>
+
+    <?php print render($page['header']); ?>
+
+    <?php if ($main_menu): ?>
+      <div id="main-menu" class="navigation">
+        <?php print theme('links__system_main_menu', array(
+          'links' => $main_menu,
+          'attributes' => array(
+            'id' => 'main-menu-links',
+            'class' => array('links', 'clearfix'),
+          ),
+          'heading' => array(
+            'text' => t('Main menu'),
+            'level' => 'h2',
+            'class' => array('element-invisible'),
+          ),
+        )); ?>
+      </div> <!-- /#main-menu -->
+    <?php endif; ?>
+
+    <?php if ($secondary_menu): ?>
+      <div id="secondary-menu" class="navigation">
+        <?php print theme('links__system_secondary_menu', array(
+          'links' => $secondary_menu,
+          'attributes' => array(
+            'id' => 'secondary-menu-links',
+            'class' => array('links', 'inline', 'clearfix'),
+          ),
+          'heading' => array(
+            'text' => t('Secondary menu'),
+            'level' => 'h2',
+            'class' => array('element-invisible'),
+          ),
+        )); ?>
+      </div> <!-- /#secondary-menu -->
+    <?php endif; ?>
+
+  </div></div> <!-- /.section, /#header -->
+
+  <?php
+//print_r($_GET);
+ if ($messages && $_GET['q']!='user' ): ?>
+    <div id="messages"><div class="section clearfix">
       <?php print $messages; ?>
     </div></div> <!-- /.section, /#messages -->
+  <?php endif; ?>
+
+  <?php if ($page['featured']): ?>
+    <div id="featured"><div class="section clearfix">
+      <?php print render($page['featured']); ?>
+    </div></div> <!-- /.section, /#featured -->
+  <?php endif; ?>
+
+  <div id="main-wrapper" class="clearfix"><div id="main" class="clearfix">
+
+    <?php if ($breadcrumb): ?>
+      <div id="breadcrumb"><?php print $breadcrumb; ?></div>
     <?php endif; ?>
-    	<div class="featureBox2" dir="ltr"><?php print render($page['content']); ?>
-	<?php print $feed_icons; ?></div>
-    </div>
-	<?php if($user->uid!=0):?>
-    <div id="footerDiv">
-    	<p>Terms of Use, Copyright, and Privacy Policy</p>
-	</div>
-	<?php endif;?>
-</div>
+
+    <?php if ($page['sidebar_first']): ?>
+      <div id="sidebar-first" class="column sidebar"><div class="section">
+        <?php print render($page['sidebar_first']); ?>
+      </div></div> <!-- /.section, /#sidebar-first -->
+    <?php endif; ?>
+
+    <div id="content" class="column"><div class="section">
+      <?php if ($page['highlighted']): ?><div id="highlighted"><?php print render($page['highlighted']); ?></div><?php endif; ?>
+      <a id="main-content"></a>
+      <?php print render($title_prefix); ?>
+      <?php if ($title): ?>
+        <h1 class="title" id="page-title">
+          <?php print $title; ?>
+        </h1>
+      <?php endif; ?>
+      <?php print render($title_suffix); ?>
+      <?php if ($tabs): ?>
+        <div class="tabs">
+          <?php print render($tabs); ?>
+        </div>
+      <?php endif; ?>
+      <?php print render($page['help']); ?>
+      <?php if ($action_links): ?>
+        <ul class="action-links">
+          <?php print render($action_links); ?>
+        </ul>
+      <?php endif; ?>
+      <?php print render($page['content']); ?>
+      <?php print $feed_icons; ?>
+
+    </div></div> <!-- /.section, /#content -->
+
+    <?php if ($page['sidebar_second']): ?>
+      <div id="sidebar-second" class="column sidebar"><div class="section">
+        <?php print render($page['sidebar_second']); ?>
+      </div></div> <!-- /.section, /#sidebar-second -->
+    <?php endif; ?>
+
+  </div></div> <!-- /#main, /#main-wrapper -->
+
+  <?php if ($page['triptych_first'] || $page['triptych_middle'] || $page['triptych_last']): ?>
+    <div id="triptych-wrapper"><div id="triptych" class="clearfix">
+      <?php print render($page['triptych_first']); ?>
+      <?php print render($page['triptych_middle']); ?>
+      <?php print render($page['triptych_last']); ?>
+    </div></div> <!-- /#triptych, /#triptych-wrapper -->
+  <?php endif; ?>
+
+  <div id="footer-wrapper"><div class="section">
+
+    <?php if ($page['footer_firstcolumn'] || $page['footer_secondcolumn'] || $page['footer_thirdcolumn'] || $page['footer_fourthcolumn']): ?>
+      <div id="footer-columns" class="clearfix">
+        <?php print render($page['footer_firstcolumn']); ?>
+        <?php print render($page['footer_secondcolumn']); ?>
+        <?php print render($page['footer_thirdcolumn']); ?>
+        <?php print render($page['footer_fourthcolumn']); ?>
+      </div> <!-- /#footer-columns -->
+    <?php endif; ?>
+
+    <?php if ($page['footer']): ?>
+      <div id="footer" class="clearfix">
+        <?php print render($page['footer']); ?>
+      </div> <!-- /#footer -->
+    <?php endif; ?>
+
+  </div></div> <!-- /.section, /#footer-wrapper -->
+
+</div></div> <!-- /#page, /#page-wrapper -->
