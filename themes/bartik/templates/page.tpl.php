@@ -82,9 +82,7 @@ if(!in_array($_GET['q'],$page_array)): ?>
 						<table width="100%" border="0" align="right" cellpadding="0" cellspacing="0" style='width:100%'>
 						<tr>
 							<td class='ubercolortabs' style='border:0px;'>
-								<ul style='float:right;'>								 
-									<span class='menupadd' id='add1'><li class='<?php echo $addp?>'>
-									<a href='?q=addnewpromo' class='tabborder'>Add Promotion</a></li></span>
+								<ul style='float:right;'>								
 									<span class='menupadd'><li class='<?php echo $liver?>'>
 									<a href='?q=promolist/live'  class='tabborder'>Live Promotions</a></li></span>
 									<span class='menupadd'><li class='<?php echo $expr?>'>
