@@ -205,9 +205,9 @@ $databases = array (
   array (
     'default' => 
     array (
-      'database' => 'promotool',
+      'database' => 'drupalnew',
       'username' => 'root',
-      'password' => 'emailops',
+      'password' => '',
       'host' => 'localhost',
       'port' => '',
       'driver' => 'mysql',

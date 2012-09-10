@@ -1,0 +1,12 @@
+.menuTop {
+width: 100%;
+height: 40px;
+color: #06F;
+float: right;
+z-index: auto;
+position: absolute;
+clear:both;
+left: -10px;
+top: -42px;
+}
+

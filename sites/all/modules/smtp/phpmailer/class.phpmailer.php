@@ -351,7 +351,7 @@ class PHPMailer {
   public function IsHTML($ishtml = true) {
     if ($ishtml) {
       $this->ContentType = 'text/html';
-    } else {
+    } else { 
       $this->ContentType = 'text/plain';
     }
   }

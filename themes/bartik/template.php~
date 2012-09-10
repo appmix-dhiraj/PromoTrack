@@ -20,10 +20,19 @@ function bartik_preprocess_html(&$variables) {
     || !empty($variables['page']['footer_fourthcolumn'])) {
     $variables['classes_array'][] = 'footer-columns';
   }
-
+  global $user;
   // Add conditional stylesheets for IE
   drupal_add_css(path_to_theme() . '/css/ie.css', array('group' => CSS_THEME, 'browsers' => array('IE' => 'lte IE 7', '!IE' => FALSE), 'preprocess' => FALSE));
-   drupal_add_css(path_to_theme() . '/css/style-login.css', array('group' => CSS_THEME, 'preprocess' => FALSE));
+   if($user->uid!=0){
+   //drupal_add_css(path_to_theme() . '/css/style-newtheme.css', array('group' => CSS_THEME, 'preprocess' => FALSE));
+	drupal_add_css(path_to_theme() . '/css/stylenew.css', array('group' => CSS_THEME, 'preprocess' => FALSE));
+	drupal_add_css(path_to_theme() . '/css/iestylenew.css', array('group' => CSS_THEME, 'browsers' => array('IE' => 'lte IE 8', '!IE' => FALSE), 'preprocess' => FALSE));
+	drupal_add_css(path_to_theme() . '/css/iestylenew9.css', array('group' => CSS_THEME, 'browsers' => array('IE' => 'gte IE 8', '!IE' => FALSE), 'preprocess' => FALSE));
+	
+   }
+	else {
+	drupal_add_css(path_to_theme() . '/css/style-login.css', array('group' => CSS_THEME, 'preprocess' => FALSE));
+  }	
   drupal_add_css(path_to_theme() . '/css/ie6.css', array('group' => CSS_THEME, 'browsers' => array('IE' => 'IE 6', '!IE' => FALSE), 'preprocess' => FALSE));
 }
 
@@ -156,9 +165,6 @@ function bartik_field__taxonomy_term_reference($variables) {
 }
 
 
-
-
-
 function bartik_theme() {
    $items = array();
    
@@ -175,10 +181,49 @@ function bartik_theme() {
     'path' => drupal_get_path('theme', 'bartik') . '/templates',
     'template' => 'user-register-form',
     'preprocess functions' => array(
-      'bartik_preprocess_user_register_form'
+    'bartik_preprocess_user_register_form'
     ),
   );
- 
+
+$items['wbn_welcome_edit_form'] = array(
+    'render element' => 'form',
+    'path' => drupal_get_path('theme', 'bartik') . '/templates',
+    'template' => 'wbn_welcome_edit_form',
+    'preprocess functions' => array(
+    'bartik_preprocess_welcome'
+    ),
+  );
+$items['wbn_admin_form'] = array(
+    'render element' => 'form',
+    'path' => drupal_get_path('theme', 'bartik') . '/templates',
+    'template' => 'wbn_admin_form',   
+  );
+$items['promotion_list'] = array(
+    'render element' => 'form',
+    'path' => drupal_get_path('theme', 'bartik') . '/templates',
+    'template' => 'promotion_list',
+  );
+$items['add_new_promo'] = array(
+    'render element' => 'form',
+    'path' => drupal_get_path('theme', 'bartik') . '/templates',
+    'template' => 'add_new_promo',
+  );
+$items['searchbox_popup'] = array(
+    'render element' => 'form',
+    'path' => drupal_get_path('theme', 'bartik') . '/templates',
+    'template' => 'searchbox_popup',    
+  );
+
+$items['save_search'] = array(
+    'render element' => 'form',
+    'path' => drupal_get_path('theme', 'bartik') . '/templates',
+    'template' => 'save_search',    
+  );
+$items['savesearch_list'] = array(
+    'render element' => 'form',
+    'path' => drupal_get_path('theme', 'bartik') . '/templates',
+    'template' => 'savesearch_list',
+  );
   return $items;
 }
 

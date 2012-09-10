@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Enables the user registration and login system.
@@ -36,7 +35,6 @@ define('USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL', 2);
  */
 function user_help($path, $arg) {
   global $user;
-
   switch ($path) {
     case 'admin/help#user':
       $output = '';
@@ -164,17 +162,17 @@ function user_entity_info() {
       ),
       'bundles' => array(
         'user' => array(
-          'label' => t('User'),
-          'admin' => array(
-            'path' => 'admin/config/people/accounts',
+        'label' => t('User'),
+        'admin' => array(
+        	'path' => 'admin/config/people/accounts',
             'access arguments' => array('administer users'),
           ),
         ),
       ),
       'view modes' => array(
         'full' => array(
-          'label' => t('User account'),
-          'custom settings' => FALSE,
+        'label' => t('User account'),
+        'custom settings' => FALSE,
         ),
       ),
     ),
@@ -203,7 +201,6 @@ function user_field_info_alter(&$info) {
     );
   }
 }
-
 /**
  * Implements hook_field_extra_fields().
  */
@@ -2752,7 +2749,7 @@ You may now cancel your account on [site:url-brief] by clicking this link or cop
 NOTE: The cancellation of your account is not reversible.
 
 This link expires in one day and nothing will happen if it is not used.
-
+admin/people
 --  [site:name] team", array(), array('langcode' => $langcode));
         break;
 

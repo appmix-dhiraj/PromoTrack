@@ -1,16 +1,447 @@
-<?php
+<?php 
 /**
  * Implements hook_menu()
  */
-function wbn_menu() {
-$items = array();
-  $items['welcome'] = array(
+function wbn_menu() { 
+	$items = array();
+  	$items['welcome'] = array(
     'title' => '',
     'page callback' => 'drupal_get_form', 
     'page arguments' => array('wbn_welcome_edit_form'),
     'access callback' => TRUE,
   );
-  return $items;
+
+	$items['welcome/admin'] = array(
+    'title' => '',
+    'page callback' => 'drupal_get_form', 
+    'page arguments' => array('wbn_admin_form'),
+    'access callback' => TRUE,
+  );
+
+    $items['promolist'] = array(
+    'title' => 'Promotions List',
+    'page callback' => 'drupal_get_form', 
+    'page arguments' => array('promotion_list'),
+    'access callback' => 'promo_view_access',	
+    '#markup' => drupal_render(promotions_records()),   
+  );
+	$items['addnewpromo'] = array(
+    'title' => 'Add New Promo',
+    'page callback' => 'drupal_get_form', 
+    'page arguments' => array('add_new_promo'),
+    'access callback' => 'promo_view_access',	    
+  );
+	
+   $items['searchbox'] = array(
+    'title' => '',
+    'page callback' => 'drupal_get_form', 
+    'page arguments' => array('searchbox_popup'),
+    'access callback' => TRUE,
+  );
+	$items['savesearch'] = array(
+    'title' => '',
+    'page callback' => 'drupal_get_form', 
+    'page arguments' => array('save_search'),
+    'access callback' => TRUE,
+  );
+	$items['savesearchlist'] = array(
+    'title' => 'Saved Search List',
+    'page callback' => 'drupal_get_form', 
+    'page arguments' => array('savesearch_list'),
+	  'access callback' => TRUE,
+    '#markup' => drupal_render(savesearch_records()),  
+  );
+  	return $items;
+}
+
+
+function gettitleforpage(){
+  $url = explode('/',$_GET['q']);
+	$title = 'LIVE PROMOTIONS';
+	$curr_url = explode('&',$url[1]);
+	if($curr_url[0] == 'expired') $title = "EXPIRED PROMOTIONS";
+	if($curr_url[0] == 'pending') $title = "PENDING PROMOTIONS";
+	if($curr_url[0] == 'search')  $title = "SEARCH RESULTS";
+	return $title ;
+}
+
+function promo_view_access() {
+     global $user;
+     $uaccess = array_values($user->roles);
+     if (isset($uaccess[1]) && $uaccess[1] != 'anonymous user' )  { 
+       return TRUE;    
+     }
+			else if (isset($uaccess[0]) && $uaccess[0] == 'authenticated user' ) {
+			return TRUE;    
+		}	
+     return FALSE;
+}
+
+function savesearch_list($form,$form_state){	
+	if(isset($_SESSION['searchfields']))unset($_SESSION['searchfields']); 
+	 $form['report'] = array(
+   '#type' => 'markup',   
+   '#markup' => drupal_render(savesearch_records($form,$form_state)),
+   '#weight' => 11,
+  );	
+ return $form;
+}
+
+
+function savesearch_records(){
+ global $user;
+	$header = array(     
+  'No' => array('data' => t('No')),
+	'search_name' => array('data' => t('Saved Searches')),
+	'Action' => array('data' => t('Action')),
+  );
+	$rows = array();
+  $query = db_select('promo_search', 'p');  
+	$query->fields('p',array('sid','uid','search_name','search_criteria'));
+	$query->condition('uid', $user->uid , '=' ) ;
+	$query->orderBy('sid','Desc');
+	$result = $query->execute();
+	$i = 1 ;
+  foreach ($result as $folk) {    	
+	$rows[$folk->sid] = array(
+	'No' => toHtml('span class="spancolsave1"', $i),    	
+	'Search_name' => toHtml('span class="spancolsave2"', $folk->search_name),    	
+	'Action' => toHtml('span class="spancolsave3"', l('View Search Results','promolist/search&searchname='.$folk->search_name)),    	
+    ); 
+	$i++;
+	}
+	$vars['header'] = $header;
+  $vars['empty'] = 'Empty List - No Entries';
+  $vars['rows'] = $rows;
+ 
+  $render_array['table'] = array(
+     '#theme' => 'table',
+     '#rows' => $rows,    
+     '#empty' => '<div style="padding-left:350px;height:50px;margin-top:20px;color:red;">Empty List - No Entries</div>',
+     '#header' => $header,
+  ); 
+  return $render_array; 
+}
+
+
+function promotions_records(){
+  $search = '' ; global $user;
+	$uaccess = array_values($user->roles);
+	$fieldsarray = array() ;
+	$header_new = array() ;
+	
+	$url = explode('/',$_GET['q']);
+	$tablename = 'promotions';
+	$curr_url = $url[1];
+	$today = date("Y-m-d H:i:s");
+	$searchd = explode('&',urldecode($_GET['q']));
+	
+	$header_ori = array(     
+  'pid' => array('data' => t('Id'), 'field' => 'p.pid'),
+	'Creator' => array('data' => t('Creater'), 'field' => 'p.Creator'),
+  'Department' => array('data' => t('Department'), 'field' => 'p.Department'),
+	'test_start_date' => array('data' => t('Test Start Date'), 'field' => 'p.test_start_date'),
+  'start_date' => array('data' => t('Start Date'), 'field' => 'p.start_date'), 
+	'end_date' => array('data' => t('End Date'), 'field' => 'p.end_date'),
+	'promo_id' => array('data' => t('Promotion Id'), 'field' => 'p.promo_id'),
+	'message_id' => array('data' => t('Message Id'), 'field' => 'p.message_id'),
+	'promo_name' => array('data' => t('Promotion Name'), 'field' => 'p.promo_name'),
+	'conditions' => array('data' => t('Terms & Conditions'), 'field' => 'p.conditions'),
+	'tc_link' => array('data' => t('T&C Link'), 'field' => 'p.tc_link'),
+	'promotions_channel' => array('data' => t('Promotions Channel'), 'field' => 'p.promotions_channel'),
+	'store_coupan_code' => array('data' => t('Store Coupon Code'), 'field' => 'p.store_coupan_code'),
+	'online_coupan_code' => array('data' => t('Online Coupon Code'), 'field' => 'p.online_coupan_code'),
+	'discount' => array('data' => t('Discount'), 'field' => 'p.discount'),
+	'discount_type' => array('data' => t('Discount Type'), 'field' => 'p.discount_type'),
+	'discount_off' => array('data' => t('Discount Off'), 'field' => 'p.discount_off'),	
+	'promo_status' => array('data' => t('Status'), 'field' => 'p.promo_status'),	
+  );
+	if((isset($uaccess[1]) && ($uaccess[1] == 'PromoTool Admin' || $uaccess[1] == 'Promo Marketing User')) && $curr_url == 'live') {
+	$header_new = array(	
+	'in_cascade' => array('data' => t('In Cascade'), 'field' => 'p.in_cascade'),
+	'msg_in_cascade' => array('data' => t('MSG in Cascade'), 'field' => 'p.msg_in_cascade'),
+	'ed_status' => array('data' => t('ED Status'), 'field' => 'p.ed_status'),
+	'fi_status' => array('data' => t('FI Status'), 'field' => 'p.fi_status'),
+	'type' => array('data' => t('Type'), 'field' => 'p.type'),
+	'channel' => array('data' => t('Channel'), 'field' => 'p.channel'),
+	'sap_id' => array('data' => t('SAP ID'), 'field' => 'p.sap_id'),
+	'isbn_ean' => array('data' => t('ISBN EAN'), 'field' => 'p.isbn_ean'),
+	'btob_id' => array('data' => t('BTOB ID'), 'field' => 'p.btob_id'),	
+	);
+	}
+
+	$header = array_merge($header_ori , $header_new) ;
+//	if(isset($_SESSION['searchfields'])) $tablename = 'promotions_view';
+	if(isset($searchd[1]) && $searchd[1]=='submit=Search') {
+		$search_arr = array();
+		$tablename = 'promotions_view';
+		for( $i = 1 ; $i < count( $searchd ) - 1 ; $i++ )  {
+			$break = explode('=',$searchd[$i]);
+			$search_arr[$break[0]]=$break[1];
+		}			
+	}
+	else if(isset($searchd[1]) && strstr($searchd[1],'searchname')){
+	  $search_name = explode('=',$searchd[1]);
+			$tablename = 'promotions_view';
+	  $search_arr = getSearchCriteria( $search_name[1] , $user->uid ) ;
+		$_SESSION['searchfields']=$search_arr;
+	}
+	else{ if(isset($_SESSION['searchfields']))unset($_SESSION['searchfields']);}
+	if($curr_url == 'expired') $tablename = 'promotions_expired';
+
+  $query = db_select($tablename, 'p');
+
+ // if(isset($_SESSION['searchfields'])) {
+if(isset($searchd[1]) && ($searchd[1] == 'submit=Search' || strstr($searchd[1],'searchname')))  {
+	 $search_promoname = trim(@$search_arr['promoname']) ;  	 
+	 $search_promotype = trim(@$search_arr['promotype']) ;  
+	 $search_startdate = trim(@$search_arr['startdate']) ;  
+	 $search_enddate   = trim(@$search_arr['enddate']) ;  
+	 $search_coupan_code = trim(@$search_arr['coupancode']) ;  
+	 $search_discount_amount = trim(@$search_arr['discountamount']) ;  
+	 $search_discounttype = trim(@$search_arr['discounttype']) ; 
+	 $search_discountoff = trim(@$search_arr['discountoff']) ;  
+	
+  if($search_promoname != '' ) 	$query->condition('p.promo_name', '%'.$search_promoname.'%','LIKE');
+	if($search_promotype != '0' ) $query->condition('p.type', $search_promotype);
+	if($search_startdate != '' ) 	$query->condition('p.start_date', $search_startdate,'>=');
+	else {
+	  if( isset($uaccess[1]) && ($uaccess[1] == 'PromoTool Admin' || $uaccess[1] == 'Promo Marketing User')){}
+		else {
+		$query->condition('start_date', $today , '<=' ) ;
+		$query->where('start_date > test_start_date') ;	
+		}
+	}
+
+	if($search_enddate != '' ) 			$query->condition('p.end_date', $search_enddate,'<=');
+	if($search_coupan_code != '' ) 		$query->condition('p.online_coupan_code', $search_coupan_code,'=');
+	if($search_discount_amount != '' )  $query->condition('p.discount', $search_discount_amount,'=');
+	if($search_discounttype != '0' ) 	$query->condition('p.discount_type', $search_discounttype,'=');
+	if($search_discountoff != '0' ) 		$query->condition('p.discount_off', $search_discountoff,'=');
+
+  }
+  /**** conditions for live, expired, pending********/
+  
+  /*if($curr_url == 'live')	 	$query->condition('end_date', $today,'>');
+  if($curr_url == 'expired')	$query->condition('end_date', $today,'<=');
+  if($curr_url == 'pending')	$query->condition('promo_status', 'Pending');*/
+  if($curr_url == 'live')	 {
+			$query->condition('promo_status', 'Live');
+			if( isset($uaccess[1]) && ($uaccess[1] == 'PromoTool Admin' || $uaccess[1] == 'Promo Marketing User'))  {					
+			}
+			else {
+				$query->condition('start_date', $today , '<=' ) ;
+				$query->where('start_date > test_start_date') ;	
+			}
+	}
+
+  if( $curr_url == 'pending' )	{
+		$query->condition('promo_status', 'Pending') ;
+		if(isset($uaccess[1]) && $uaccess[1] == 'Merchandiser') $query->condition( 'Creator', $user->name) ;
+  }
+
+  $count_query = clone $query;
+
+  $count_query->addExpression('COUNT(p.pid)');
+
+  $query = $query->extend('PagerDefault')->extend('TableSort');
+ 
+  $fieldsarray = array('pid','Creator', 'Department', 'test_start_date','start_date', 'end_date','promo_id','message_id','promo_name','conditions','tc_link',
+'promotions_channel','store_coupan_code','online_coupan_code','discount','discount_type','discount_off','promo_status');
+ 
+if(( isset($uaccess[1]) && ($uaccess[1] == 'PromoTool Admin'  || $uaccess[1] == 'Promo Marketing User'))  && $curr_url == 'live' ) 	{
+array_push($fieldsarray,'test_start_date','in_cascade','msg_in_cascade','ed_status','fi_status','type','channel','sap_id','isbn_ean','btob_id');
+}
+
+  $query->fields('p',$fieldsarray)
+          ->limit(10)
+          ->orderByHeader($header)
+          ->setCountQuery($count_query);
+ 
+  $result = $query->execute();
+	//if(isset($searchd[1]) && $searchd[1]=='submit=Search') {
+  if($curr_url == 'search' && !isset($_SESSION['searchfields'])) $result = array();
+  $rows = array();
+  $showarray = array();
+  $showarray_new = array();
+
+  foreach ($result as $folk) {   
+	$showarray = array(
+	'Id' => toHtml('span class="span-table"', $folk->pid),
+	'Creator' => toHtml('span class="span-table"', $folk->Creator),
+	'Department' => toHtml('span class="span-table"', $folk->Department),
+	'test_start_date' => toHtml('span class="span-table"', $folk->test_start_date),
+	'start_date' => toHtml('span class="span-table"',date('m-d-Y',strtotime($folk->start_date))),
+	'end_date' => toHtml('span class="span-table"', $folk->end_date),
+	'promo_id' => toHtml('span class="span-table"', l($folk->promo_id,'javascript:void(0)',array('fragment' => '','external'=>true))),
+	'message_id' => toHtml('span class="span-table"', $folk->message_id),
+	'promo_name' => toHtml('span class="span-table"', $folk->promo_name),
+	'conditions' => toHtml('span class="span-table"', $folk->conditions),
+	'tc_link' => toHtml('span class="span-table"', $folk->tc_link),
+	'promotions_channel' => toHtml('span class="span-table"', $folk->promotions_channel),
+	'store_coupan_code' => toHtml('span class="span-table"', $folk->store_coupan_code),
+	'online_coupan_code' => toHtml('span class="span-table"', $folk->online_coupan_code),
+	'discount' => toHtml('span class="span-table"', $folk->discount),
+	'discount_type' => toHtml('span class="span-table"', $folk->discount_type),
+	'discount_off' => toHtml('span class="span-table"', $folk->discount_off),	
+	'promo_status' => toHtml('span class="span-table"', $folk->promo_status),	
+   ); 
+	if((isset($uaccess[1]) && ($uaccess[1] == 'PromoTool Admin' || $uaccess[1] == 'Promo Marketing User')) && $curr_url == 'live') {
+		$showarray_new = array(		
+		'in_cascade' => toHtml('span class="span-table"', $folk->in_cascade),
+		'msg_in_cascade' => toHtml('span class="span-table"', $folk->msg_in_cascade),
+		'ed_status' => toHtml('span class="span-table"', $folk->ed_status),
+		'fi_status' => toHtml('span class="span-table"', $folk->fi_status),
+		'type' => toHtml('span class="span-table"', $folk->type),
+		'channel' => toHtml('span class="span-table"', $folk->channel),
+		'sap_id' => toHtml('span class="span-table"', $folk->sap_id),
+		'isbn_ean' => toHtml('span class="span-table"', $folk->isbn_ean),
+		'btob_id' => toHtml('span class="span-table"', $folk->btob_id),
+		);	
+	}
+	
+	$rows[$folk->pid] = array_merge($showarray , $showarray_new) ;
+	if((isset($uaccess[1]) && ($uaccess[1] == 'PromoTool Admin' || $uaccess[1] == 'Promo Marketing User')) && $curr_url == 'live'){}else	
+	unset($rows[$folk->pid]['test_start_date']);
+  }
+	if((isset($uaccess[1]) && ($uaccess[1] == 'PromoTool Admin' || $uaccess[1] == 'Promo Marketing User')) && $curr_url == 'live'){}else
+	unset($header['test_start_date']);
+
+  $vars['header'] = $header;
+  $vars['empty'] = 'Empty List - No Entries';
+  $vars['rows'] = $rows;
+// print_r($rows);
+  $render_array['table'] = array(
+     '#theme' => 'table',
+     '#rows' => $rows,    
+     '#empty' => '<div style="padding-left:350px;height:50px;margin-top:20px;color:red;">Empty List - No Entries</div>',
+     '#header' => $header,
+  ); 
+	if($curr_url == 'search' && !isset($_SESSION['searchfields'])){}else{
+  	$render_array['pager'] = array(
+     '#theme' => 'pager',
+  	);
+}
+  return $render_array; 
+}
+
+function promotion_list($form,$form_state){	 
+	$form['report'] = array(
+    '#type' => 'markup',   
+    '#markup' => drupal_render(promotions_records($form,$form_state)),
+    '#weight' => 10,
+  );	
+	$form['label'] = array(
+    '#type' => 'item',   
+    '#markup' =>gettitleforpage(),
+    '#weight' => 10,
+  );		
+ return $form;
+}
+
+
+function searchbox_popup($form,$form_state){
+	$promoname = '';
+	$promotype = '';
+	$startdate = '';
+	$enddate = '';
+	$coupancode = '';
+	$discountamount = '';
+	$discounttype = '';
+	$discountoff = '';$discount='';
+	
+	$plist = promo_types_list();	
+	$dropdown_array[0] = 'Select';
+	foreach ($plist as $item) {					
+		$dropdown_array[$item->id] = $item->promotype;
+	}		
+	
+	if(isset($_SESSION['searchfields'])){
+		$promoname = $_SESSION['searchfields']['promoname'];
+		$promotype = $_SESSION['searchfields']['promotype'];
+		$startdate = $_SESSION['searchfields']['startdate'];
+		$enddate = $_SESSION['searchfields']['enddate'];
+		$coupancode = $_SESSION['searchfields']['coupancode'];
+		$discountamount = $_SESSION['searchfields']['discountamount'];
+		$discounttype = $_SESSION['searchfields']['discounttype'];
+		$discountoff = $_SESSION['searchfields']['discountoff'];
+	}
+$form['submit'] = array(
+		'#type' => 'submit',
+	  '#value' => t('Search'),
+		'#prefix' => '<div style="margin-left:130px;">',
+		'#suffix' => '</div>',	
+		'#attributes' => array('class' => array('butt_save'),'style'=>'background-image: url(../images/submit.png);'),
+	  
+	);
+	$form['coupancode'] = array(
+		'#type' => 'textfield',		
+		'#default_value' => $coupancode, 
+	);
+	$form['discountamount'] = array(
+		'#type' => 'textfield',	
+		'#default_value' => $discountamount,  
+	);
+	$form['promoname'] = array(
+		'#type' => 'textfield',		
+		'#default_value' => $promoname,  
+	);
+	
+	$form['promotype'] = array(
+		'#key_type' => 'associative',
+		'#multiple_toggle' => '1',
+		'#type' => 'select',
+		'#options' => $dropdown_array,'#attributes' => array('style'=>'width:auto;'),
+		'#default_value' =>$promotype,  
+	  );
+	$form['startdate'] = array(
+		'#type' => 'date_popup',
+		'#default_value' => $startdate,		
+		'#date_timezone' => date_default_timezone(),
+		'#date_format' => 'm/d/Y',
+		'#date_increment' => 1,
+		'#date_year_range' => '-3:+3',
+	
+	  );
+	$form['enddate'] = array(
+		'#type' => 'date_popup',
+		'#default_value' => $enddate,		
+		'#date_timezone' => date_default_timezone(),
+		'#date_format' => 'm/d/Y',
+		'#date_increment' => 1,
+		'#date_year_range' => '-3:+3',
+		
+	  );	
+	$form['discounttype'] = array(
+		'#key_type' => 'associative',
+		'#multiple_toggle' => '1',
+		'#type' => 'select',
+		'#options' => array('0'=>'Select','Percent off'=>'Percent off','Dollars off'=>'Dollars off','Fixed Price'=>'Fixed Price'),
+		'#attributes' => array('style'=>'width:110px;'),
+
+		'#default_value' =>$discounttype,  
+	  );
+	$form['discountoff'] = array(
+		'#key_type' => 'associative',
+		'#multiple_toggle' => '1',
+		'#type' => 'select',
+		'#options' => array('0'=>'Select','Online Price'=>'Online Price','List Price'=>'List Price','Post-Discounted'=>'Post-Discounted','Price'=>'Price'),		 
+		'#default_value' =>$discountoff,
+		'#attributes' => array('style'=>'width:140px;'),
+	  );
+	$form['#redirect']='promolist/search';
+	  return $form;
+	
+}
+
+function searchbox_popup_submit($form,&$form_state){
+	
+	$str = '' ;
+	foreach($form_state['values'] as $k => $v )  {
+		$str.= $k.'='.$v.'&' ;
+	}
+	$_SESSION['searchfields'] = $form_state['values'];
+  drupal_goto('promolist/search&'.$str);
 }
 
 function user_list() {
@@ -20,39 +451,96 @@ function user_list() {
 	return $results;
 }
 
-function wbn_welcome_edit_form($form, &$form_submit) { 
-	global $user;
-	$ulist = user_list();
-//echo '<pre>',print_r($user),'</pre>';
-	$roles = user_roles();
+function promo_types_list() {
+	$query = db_select('promo_types', 'p');
+	$query->fields('p', array('id', 'promotype'));
+	$results = $query->execute();
+	return $results;
+}
 
+function wbn_welcome_edit_form($form, &$form_submit) {
+	if(isset($_SESSION['searchfields']))unset($_SESSION['searchfields']);
+	global $user;
+	$uaccess = $user->roles;
+	if (isset($uaccess[1]) && $uaccess[1] == 'anonymous user' ) drupal_goto('myaccount');
+	$user_roles = array_values($user->roles); 
+	
+	$ulist = user_list();
+	$roles = user_roles();
+	
 	$userroles['0'] = 'Select Role';
-	foreach ($ulist as $item) {
+	
+	foreach ($ulist as $item) {		
 		$key = $item->uid;
 		$value = $item->name;
-		
+		$rolename = check_user_role($item->uid);
+		if($rolename != 'PromoTool Admin' && $rolename != 'administrator' )			
 		$dropdown_array[$key] = $value;
 	}
 	foreach ($roles as $k=>$v) {
 		if($v!='anonymous user' && $v!='administrator')	{	
-			if($v=='authenticated user') $v='Default Users';		
+			if($v=='authenticated user') $v = 'B&N User';		
 			$userroles[$k] = $v;
 		}
 	}
-	
 	$dropdown_array['0'] = 'Select User';
 	
 	if(isset($user->name) && $user->name != '' ) {
-	  $user_roles = array_values($user->roles); 
+	  
 	  if(isset($user_roles[1])) $urole=$user_roles[1];
-	  else $urole='Default User';//$user_roles[0];	
-	  $form[] = array(
+	  else $urole='B&N User';	
+	  $pre = 'a' ;
+	  $flett = substr($urole,0,1);
+	  if(strtolower($flett) == 'a') $pre ='an';		
+	  $form['welcome'] = array(
 		'#type' => 'item',
-		'#markup' => t('<BR>Welcome '.$user->name.'. <BR><BR> You are logged in as a '.$urole.' user.'    
+		'#markup' => t('<BR>Welcome '.$user->name.'. <BR><BR>You are '.$pre.' '.$urole.', here are your options:'    
 		),
 	  );
 	}
+  return $form;
+}
 
+
+function wbn_admin_form($form, &$form_submit) {
+	if(isset($_SESSION['searchfields']))unset($_SESSION['searchfields']);
+	global $user;
+	$uaccess = $user->roles;
+	if (isset($uaccess[1]) && $uaccess[1] == 'anonymous user' ) drupal_goto('myaccount');
+	$user_roles = array_values($user->roles); 
+	
+	$ulist = user_list();
+	$roles = user_roles();
+	
+	$userroles['0'] = 'Select Role';
+	
+	foreach ($ulist as $item) {		
+		$key = $item->uid;
+		$value = $item->name;
+		$rolename = check_user_role($item->uid);
+		if($rolename != 'PromoTool Admin' && $rolename != 'administrator' )			
+		$dropdown_array[$key] = $value;
+	}
+	foreach ($roles as $k=>$v) {
+		if($v!='anonymous user' && $v!='administrator')	{	
+			if($v=='authenticated user') $v = 'B&N User';		
+			$userroles[$k] = $v;
+		}
+	}
+	$dropdown_array['0'] = 'Select User';
+	
+	if(isset($user->name) && $user->name != '' ) {	  
+	  if(isset($user_roles[1])) $urole=$user_roles[1];
+	  else $urole='B&N User';	
+	  $pre = 'a' ;
+	  $flett = substr($urole,0,1);
+	  if(strtolower($flett) == 'a') $pre ='an';		
+	  $form['welcome'] = array(
+		'#type' => 'item',
+		'#markup' => t('<BR>Welcome '.$user->name.'. <BR><BR>You are '.$pre.' '.$urole.', here are your options:'    
+		),
+	  );
+	}
 	if($urole == 'PromoTool Admin') {
 	$form[] = array(
 		'#type' => 'item',
@@ -66,30 +554,77 @@ function wbn_welcome_edit_form($form, &$form_submit) {
 	  '#multiple_toggle' => '1',
 	  '#type' => 'select',
 	  '#options' => $dropdown_array,
-	  '#title' => 'Username',
+	  '#title' => '',
+	  '#ajax' => array(
+    'callback' => 'ajax_example_simplest_callback',
+    'wrapper' => 'checkboxes-div',
+	  'method' => 'replace','effect' => 'fade',
+     ),
 	);
+
 	$form['filterset1']['userroles'] = array(
 	  '#weight' => '4',
 	  '#key_type' => 'associative',
 	  '#multiple_toggle' => '1',
 	  '#type' => 'select',
 	  '#options' => $userroles,
-	  '#title' => 'New User Status',
+	  '#title' => '',
 	  '#size'=> 1,
 	  '#prefix' => '<div class="poll-form">',
 	  '#suffix' => '</div>', 
 	);
 	
-    	$form['submit'] = array(
-    	'#type' => 'submit',
-   	'#value' => t('Save Changes'),
-	'#prefix' => '<div class="poll-form" style="margin-left:130px;">',
-	'#suffix' => '</div>', 
-  	);
-    }
+   $form['checkboxes_fieldset'] = array(   
+    '#prefix' => '<div id="checkboxes-div">',
+    '#suffix' => '</div>',
+    '#type' => 'item',   
+  );
 
+    $form['submit'] = array(
+    '#type' => 'submit',
+   	'#value' => t('Save Changes'),
+	  '#prefix' => '<div style="margin-left:130px;">',
+	  '#suffix' => '</div>',	
+	  '#attributes' => array('class' => array('butt_save'),'style'=>'background-image: url(../images/save_changes.jpg);'),
+  	);
+    }	
   return $form;
 }
+
+function ajax_example_simplest_callback($form, $form_state) {
+	$result = db_query('SELECT r.name as rolename FROM {role} r,{users_roles} u WHERE u.uid = (:uid) and u.rid=r.rid', array(':uid' => $form_state['values']['username']));
+	
+	 foreach ($result as $record) {
+	 	$rolename = $record->rolename;	
+	 }
+	if(trim($rolename) != ''){
+	if( $rolename == 'authenticated user' ) $rolename = 'B&N User' ;
+    return '<div id="checkboxes-div" class="hightlighttext">Current role of this User is <b>'.$rolename.'.</b></div>';
+	}
+	else if($form_state['values']['username']==0) return '<div id="checkboxes-div"></div>';
+	else return '<div id="checkboxes-div">No Role is assigned.</div>';
+}
+
+function theme_preprocess_welcome(&$variables) { 
+	$ulist = user_list();
+	$roles = user_roles();
+	global $user;
+	foreach ($ulist as $item) {
+		$key = $item->uid;
+		$value = $item->name;		
+		$userlist[$key] = $value;
+	}
+	foreach ($roles as $k=>$v) {
+		if($v!='anonymous user' && $v!='administrator')	{	
+			if( $v == 'authenticated user' ) $v = 'Default Users' ;		
+			$userroles[$k] = $v;
+		}
+	}
+	$variables['user'] = $user;	
+	$variables['ulist'] = $userlist;
+	$variables['roles'] = $userroles;
+}
+
 
 function check_role_exists($userid) {
 	$query = db_select('users_roles', 'u');
@@ -98,8 +633,17 @@ function check_role_exists($userid) {
 	$results = $query->execute();	
 	return $results->rowCount();
 }
-function wbn_welcome_edit_form_validate($form, &$form_submit) {
 
+function check_user_role($userid) {
+	$result = db_query('SELECT r.name as rolename FROM {role} r,{users_roles} u WHERE u.uid = (:uid) and u.rid=r.rid', array(':uid' => $userid));
+	$rolename = '';
+	 foreach ($result as $record) {
+	 	$rolename = $record->rolename;	
+	 }
+	return $rolename;
+}
+
+function wbn_admin_form_validate($form, &$form_submit) {
   if ($form_submit['values']['username'] == 0) {
     form_set_error('username', t('You must select a username.'));
   }
@@ -108,14 +652,12 @@ function wbn_welcome_edit_form_validate($form, &$form_submit) {
   }
 }
 
-function wbn_welcome_edit_form_submit($form, &$form_submit) {
-	
+function wbn_admin_form_submit($form, &$form_submit) {
 	$userrole = $form_submit['values']['userroles'];
 	$userid   = $form_submit['values']['username'];
 	$check = check_role_exists($userid);
 	if($check>0) {
-	db_query("update {users_roles} set rid='$userrole' where uid='$userid'");
-
+	db_query("update {users_roles} set rid='$userrole' where uid='$userid'") ;
 	}
 	else {
 	db_insert('users_roles') // Table name no longer needs {}
@@ -128,5 +670,153 @@ function wbn_welcome_edit_form_submit($form, &$form_submit) {
 	drupal_set_message(t('Role is assigned successfully.'));	
 }
 
+function toHtml($tag = 'p', $value = NULL, $attributes = array()) {
+  $vars['element'] =
+    array('#tag' => $tag,
+          '#attributes' => $attributes,
+          '#value' => $value,
+  );
+  return theme('html_tag', $vars);
+}
 
+function save_search($form, $fomr_state){
+$form['submit'] = array(
+		'#type' => 'submit',
+	  '#value' => t('Save'),
+		'#prefix' => '<div style="margin-left:130px;">',
+		'#suffix' => '</div>',	
+		'#attributes' => array('class' => array('butt_save'),'style'=>'background-image: url(../images/save_changes.jpg);'),
+	  
+	);
+	$form['searchname'] = array(
+		'#type' => 'textfield',		
+	);
+return $form;
+}
 
+function save_search_submit($form,$form_state){
+  global $user;
+  $arr = array();
+  $searchname = $form_state['values']['searchname'];
+  $searchfields = $_SESSION['searchfields'];
+	unset($searchfields['submit']);
+	unset($searchfields['form_build_id']);
+	unset($searchfields['form_token']);
+	unset($searchfields['form_id']);
+	unset($searchfields['op']);
+ 	$search_criteria = serialize($searchfields);
+	$query = db_select('promo_search', 'p');
+	$query->fields('p', array('sid','uid'));
+	$query->condition('uid', $user->uid,'=');
+	$query->orderBy('sid', 'ASC');
+	$results = $query->execute();	
+	foreach ($results as $folk) {    	
+			$arr[] = $folk->sid;
+	}
+	
+	$count = $results->rowCount();
+	if( $count == 5 ){
+		db_delete('promo_search')
+		  ->condition('sid', $arr[0])
+		  ->execute();
+	}	
+	
+	db_insert('promo_search') 
+	->fields(array(
+	  'uid'=> $user->uid,
+	  'search_name' => $searchname,
+	  'search_criteria' => $search_criteria,
+	  'create_date' => date('Y-m-d'),	  
+	))
+	->execute();
+	
+ drupal_set_message(t('Search saved successfully.'));	
+ drupal_goto('savesearchlist');
+}
+
+function getSearchCriteria($search_name,$uid){
+
+$result = db_query("SELECT search_criteria FROM {promo_search} WHERE uid = '$uid' and search_name='$search_name'");
+
+foreach ($result as $folk) {    	
+		$arr = $folk->search_criteria;
+}
+return unserialize($arr);
+}
+/************** Search Function **********************/
+function add_new_promo($form,$form_state){
+	$plist = promo_types_list();	
+	$dropdown_array[0] = ' Select Promotion Type ';
+	foreach ($plist as $item) {					
+		$dropdown_array[$item->id] = $item->promotype;
+	}		
+
+	$form['submit'] = array(
+		'#type' => 'submit',			
+	  '#value' => t('Add Promotion'),		
+		'#attributes' => array('style'=>'background-image: url(../images/Add.png);'),	  
+	);
+
+	$form['promodescription'] = array(
+		'#type' => 'textfield',	
+	);
+
+	$form['marketingplacement'] = array(
+		'#type' => 'textfield',				 
+	);
+
+	$form['promoname'] = array(
+		'#type' => 'textfield',				
+	);
+	
+	$form['promotype'] = array(
+		'#key_type' => 'associative',
+		'#multiple_toggle' => '1',
+		'#type' => 'select',
+		'#options' => $dropdown_array,
+		'#attributes' => array('style'=>'width:190px;'),		
+		
+ 		
+	  );
+	$form['channel'] = array(
+		'#key_type' => 'associative',
+		'#multiple_toggle' => '1',
+		'#type' => 'select',
+		'#options' => array(''=>'Select Channel','Online Only'=>'Online Only','Store Only'=>'Store Only','Dual Channel'=>'Dual Channel'),'#attributes' => array('style'=>'width:190px;'),	
+		
+	  );
+	$form['coupon'] = array(
+		'#key_type' => 'associative',
+		'#multiple_toggle' => '1',
+		'#type' => 'select',
+		'#options' => array(''=>'Select','Yes'=>'Yes','No'=>'No'),
+		'#attributes' => array('style'=>'width:190px;'),	 
+	  );	
+		
+	  return $form;
+}
+
+function add_new_promo_validate($form, &$form_state) {
+if (trim($form_state['values']['promoname']) == '') {
+    form_set_error('promoname', t('Promotion Name is required.'));
+  }
+if (trim($form_state['values']['promodescription']) == '') {
+    form_set_error('promodescription', t('Promotion Description is required.'));
+  }
+if (trim($form_state['values']['marketingplacement']) == '') {
+    form_set_error('marketingplacement', t('Marketing Placement is required.'));
+  }
+if (trim($form_state['values']['promotype']) == '0') {
+    form_set_error('promotype', t('Promotion Type is required.'));
+  }
+if (trim($form_state['values']['channel']) == '') {
+    form_set_error('channel', t('Channel is required.'));
+  }
+if (trim($form_state['values']['coupon']) == '') {
+    form_set_error('coupon', t('Coupon is required.'));
+  }
+
+  
+}
+
+function add_new_promo_submit($form, &$form_submit) {}

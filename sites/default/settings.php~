@@ -205,7 +205,7 @@ $databases = array (
   array (
     'default' => 
     array (
-      'database' => 'promotool',
+      'database' => 'drupalnew1',
       'username' => 'root',
       'password' => '',
       'host' => 'localhost',

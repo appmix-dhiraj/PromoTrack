@@ -1,7 +1,7 @@
 
 /* ---------- Overall Specifications ---------- */
 
-body {
+/*body {
   line-height: 1.5;
   font-size: 87.5%;
   word-wrap: break-word;
@@ -9,7 +9,7 @@ body {
   padding: 0;
   border: 0;
   outline: 0;
-}
+}*/
 a:link,
 a:visited {
   text-decoration: none;
@@ -1052,7 +1052,7 @@ ul.action-links li a {
   background: rgba(30, 50, 10, 0.08);
 }
 div.messages {
-  margin: 8px 15px;
+  margin: 8px 15px;padding:0 20px 0 20px;
 }
 
 /* -------------- Breadcrumbs   -------------- */
@@ -1094,8 +1094,7 @@ div.password-confirm {
 
 input.form-submit,
  /*a.button {
- background: #fff url(../images/buttons.png) 0 0 repeat-x;
- 
+ background: #fff url(../images/buttons.png) 0 0 repeat-x; 
   border: 1px solid #e4e4e4;
   border-bottom: 1px solid #b4b4b4;
   border-left-color: #d2d2d2;
@@ -1262,7 +1261,7 @@ select.form-select {
 input.form-text,
 textarea.form-textarea,
 select.form-select {
-  border: 1px solid #ccc;
+  border: 1px solid #ccc;width:180px;font-size:12px;
 }
 input.form-submit:hover,
 input.form-submit:focus {
@@ -1276,8 +1275,9 @@ input.form-submit:focus {
   margin-top: 2px;
 }
 .form-item label {
-  font-size: 0.929em;
-  width:130px;float:left;
+  /*font-size: 0.929em;*/
+ font-size: 1.1em;	
+ width:130px;float:left;
 }
 .form-type-radio label,
 .form-type-checkbox label {
@@ -1671,10 +1671,10 @@ div.admin-panel .description {
 .poll .bar .foreground {
   background-color: #666;
 }
-#footer-wrapper .poll .bar {
+/*#footer-wrapper .poll .bar {
   background-color: #666;
 }
 #footer-wrapper .poll .bar .foreground {
   background-color: #ddd;
-}
-table.logintable{border:0px;}
+}*/
+table.logintable{border:0px;padding:0px;}

@@ -1,0 +1,140 @@
+ html,
+ body {
+ margin:0;
+ padding:0;
+ height:100%;font-family:Arial, Helvetica, sans-serif; color:#333; font-size:12px; background:#f5f4f0;
+ }
+#wrapper {
+min-height:100%;
+position:relative;
+width:100%; background:#F5F4F0; margin:auto; padding:0 0 0 0;
+}
+#header {  
+	width:95% ;height:80px ;padding:0px 10px 0px 10px ; background:#F5F4F0;clear:both;
+}
+#content {
+padding:10px;
+padding-bottom:80px; /* Height of the footer element */
+}
+
+#footer {
+width:100%;
+height:80px;
+position:absolute;
+bottom:0;
+left:0;
+background:#999;
+height:35px;text-align:left;
+}
+
+/***************************************************************************************************/
+.colRbox {width:90%; height:auto; padding:0px;}
+#container {width:100%; height:auto; background:#F5F4F0; } 
+.menuTop {
+/*position: relative;
+width: 550px;
+height: 40px;
+color: #06F;
+float: none;
+z-index: auto;
+position: absolute;
+left: 420px;
+top: -41px;*/
+position: relative;
+width: 550px;
+height: 40px;
+color: #06F;
+float: none;
+z-index: auto;
+position: absolute;
+clear:both;
+left: 350px;
+top: -41px;
+}
+.fmimage {width:100%;	height:auto;background: url(../images/round_patch11.png); background-repeat:no-repeat;background-color: #FFF; border-top-left-radius:8px; border-top-right-radius:8px; 
+box-shadow:1px 0px 4px #666 ; position: relative;
+ }
+.fmimagenew {width:100%;	height:auto;background: url(../images/round_patch11.png); background-repeat:no-repeat;background-color: #FFF; border-top-left-radius:8px; border-top-right-radius:8px; 
+box-shadow:1px 0px 4px #666 ; 
+ }
+#imagecontainer { }
+#topPacth{ width:95%; height:20px;background:#F5F4F0; color: #598264;
+	font-size: 14px;
+	font-weight: normal;
+	text-align: center;
+	font-family:arial;} 
+#imagemackone {width:100%; float:left; height:60px; padding:1px 1px 0 0 ; margin-bottom:0px; }
+#imagemack {width:100%; float:left; height:40px; padding:1px 1px 0 0 ; margin-bottom:0px; }
+#imagemacktwo {width:100%; float:left; height:15px;margin-bottom:0px; background: #FFF; }
+#imagemackthree {width:100%; float:left; height:10px;margin-bottom:0px; background:#48ab0d; }
+#imagemanubar {
+width:100%;height:auto; margin-bottom:0px; display:block;}
+.punchline {
+font: Arial, Helvetica, sans-serif;
+font-size: 25px;
+font-weight: bold;
+color: #174F20;
+display: block;
+padding-top: 15px;
+padding-right: 0px;
+padding-bottom: 0px;
+padding-left: 0px;
+}
+#rightbutton {margin:0px; padding:0px; list-style-type: none; float:right;}
+#rightbutton li { float:left; margin: 2px; margin-top:15px; font-family: Arial, Helvetica, sans-serif ; color:#427151; font-size:14px; font-weight: normal;}
+#rightbutton li a{ text-decoration:none; color:#1C5022;}
+#rightbutton li a:hover{ text-decoration:underline;}
+#logo{	margin-top:-15px;	float:left;padding-left:0px;}
+.username {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 16px;
+	font-style: normal;
+	font-weight: normal;
+	color: #060;
+}
+.note{color: #000000;font-size:13px;}
+.span-table{text-align:center;min-width:90px;}
+table, caption, tbody, tfoot, thead, tr, th, td {    
+  border: 0;  width:80%;
+}
+tbody {
+  border-top: 0px solid #ccc;padding:10px;
+}
+
+table th{
+background-image: url(../images/bg_heder.jpg);
+background-repeat: repeat-x;
+background-position: center;
+height: 50px;
+border: 2px solid #e6e6e6;text-align:center;
+color:#1C5022;
+}
+tr.even,
+tr.odd {
+  background-color: #e6f2e7;
+  border-right: 2px solid #ccc; 
+}
+tr.even {
+  background-color: #f5f4f0;  
+  background-color: #ffffff; 
+}
+table.padded-table td { padding:2px; }
+td{border-left:0px solid #e6e6e6;}.spancol1{width:20px;text-align:center;padding:5px 0 5px 20px;}
+.spancol2{width:630px;padding-left:10px;}
+.spancol3{width:190px;text-align:center;}
+
+span,samp { float:left; margin:0 auto; padding:0;  list-style-type:none;}
+
+.butt_save {
+	background-image: url(../images/save_changes.jpg);
+	background-repeat: no-repeat;
+	background-position: left top;
+	height: 32px;
+	width: 100px;
+	border: 0px;
+}
+
+.formlabel{font-size:15px;font-weight:bold;}
+.textarea-form{width:400px;}
+.hightlighttext{padding:10px 0 10px 10px;background-color:#ccc; width:300px;color:#000;margin:0 0 10px 0;}
+
