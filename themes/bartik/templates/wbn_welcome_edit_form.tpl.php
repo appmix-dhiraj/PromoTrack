@@ -15,7 +15,7 @@
 	<?php if($urole == 'Default' && $user_roles[0]!=='anonymous user'):?>
 	<tr>
 		<td align=left><a href='?q=promolist/live'><img src='<?php echo $theme ?>/images/livepromo.jpg'></a></td>
-		<td align=left style='width:30px'><a href='#'><img src='<?php echo $theme ?>/images/promocal.jpg'></a></td>
+		<td align=left><a href='#'><img src='<?php echo $theme ?>/images/promocal.jpg'></a></td>
 	
 		<td align=left>
 		<a href='?q=promolist/expired' class='tdnoborder'><img src='<?php echo $theme ?>/images/expiredpromo.jpg'></a>
@@ -24,7 +24,7 @@
 	<?php endif; ?>	
 	<?php if($urole == 'Merchandiser'):?>
 	<tr>
-		<td align=left><a href='#'><img src='<?php echo $theme ?>/images/addpromo.jpg'></a></td>
+		<td align=left><a href='?q=addnewpromo'><img src='<?php echo $theme ?>/images/addpromo.jpg'></a></td>
 		<td align=left><a href='#'><img src='<?php echo $theme ?>/images/promocal.jpg'></a></td>
 	
 		<td align=left>
@@ -60,7 +60,7 @@
 			<a href='?q=promolist/expired'><img src='<?php echo $theme ?>/images/expiredpromo.jpg'></a>
 		</td>	
 		<td colspan=2 style='width:64%;text-align:left;' >
-			<a href='#'><img src='<?php echo $theme ?>/images/addpromo.jpg'></a>
+			<a href='?q=addnewpromo'><img src='<?php echo $theme ?>/images/addpromo.jpg'></a>
 		</td>
 	</tr>	
 	<?php endif; ?>	

@@ -66,7 +66,7 @@ if(!in_array($_GET['q'],$page_array)): ?>
 			</div>
 			<header>
 				<div id="logo">
-				<?php if ($logo): ?><?php //print $front_page; ?>
+				<?php if ($logo): ?>
 						<a href="?q=welcome" title="<?php print t('Home'); ?>" rel="home">
 						<?php if($user->uid!=0) $logoimg=$logo; 
 							else $logoimg=path_to_theme().'/images/'.'logo_login.jpg';?>				
@@ -81,8 +81,12 @@ if(!in_array($_GET['q'],$page_array)): ?>
 				<div class="menuTop">
 						<table width="100%" border="0" align="right" cellpadding="0" cellspacing="0" style='width:100%'>
 						<tr>
-							<td class='ubercolortabs' style='border:0px;'>
-								<ul style='float:right;'>								
+					 <td class='ubercolortabs' style='border:0px;'>
+								<ul style='float:right;'>	
+									<?php if(isset($userroles[1]) && ($userroles[1]=='Merchandiser' || $userroles[1]=='PromoTool Admin' || $userroles[1]=='Promo Marketing User')):?>							 
+									<span class='menupadd' id='add1'><li class='<?php echo $addp?>'>
+									<a href='?q=addnewpromo' class='tabborder'>Add Promotion</a></li></span>
+									<?php endif; ?>
 									<span class='menupadd'><li class='<?php echo $liver?>'>
 									<a href='?q=promolist/live'  class='tabborder'>Live Promotions</a></li></span>
 									<span class='menupadd'><li class='<?php echo $expr?>'>
@@ -105,7 +109,7 @@ if(!in_array($_GET['q'],$page_array)): ?>
 							<td class='ubercolortabs' style='border:0px;'>
 								<ul>
 								 <span class='menupadd'><li class='selected'>
-									<a href='?q=welcome' >Home</a></li></span>
+									<a href='?q=welcome'>Home</a></li></span>
 								</ul>
 							</td>
 						</tr>

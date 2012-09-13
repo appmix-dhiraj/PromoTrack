@@ -1,11 +1,9 @@
-<style>table td{border:0px solid #e6e6e6;text-align:left;}
-
-</style>
-<?php $errors = form_get_errors('name'); 
-$plist = promo_types_list();	
+<style>table td{border:0px solid #e6e6e6;text-align:left;}</style>
+<?php 
+$errors = form_get_errors('name'); 
+$plist = promo_types_list();
 ?>
 <div id="imagemackone"><span class="punchline">ADD NEW PROMOTION</span></div>
-
 <div id="imagemackthree"></div>
 <div id="imagemanubar" ><div>
 <table align=left  style='width:800px;'>
@@ -30,9 +28,11 @@ $plist = promo_types_list();
  <select style="width:190px;" id="edit-promotype" name="promotype" class="<?php echo $classfrm?>">
 <option value='0'>Select Promotion Type</option>
 <?php foreach ($plist as $item) {
-		echo "<option value='".$item->id."' alt='".$item->promotype."' title='".$item->promotype."' style='width:190px;'>".$item->promotype."</option>";	
-	}?></select>
-<?php //print str_replace('</div>','',render($form['promotype']));?>
+		if($form['promotype']['#value']==$item->id) $sel='selected'; else $sel='';	
+		echo "<option value='".$item->id."' $sel alt='".$item->promotype."' title='".$item->promotype."' style='width:190px;'>".$item->promotype."</option>";	
+}
+?>
+</select>
 <div class='redmark'>*</div>
 <?php if(isset($errors['promotype'])) echo'<div class="addpromo" style="color:red">', $errors['promotype'],'</div>';?></div>
 </td></tr>
@@ -40,92 +40,23 @@ $plist = promo_types_list();
 <div class='redmark'>*</div>
 <?php if(isset($errors['channel'])) echo'<div class="addpromo" style="color:red">', $errors['channel'],'</div>';?></div>
 </td></tr>
-<tr><td class='formlabel' valign=middle>Coupon</td><td align=left><?php print str_replace('</div>','',render($form['coupon']));?>
+<tr><td class='formlabel' valign=middle>Coupon Required</td><td align=left><?php print str_replace('</div>','',render($form['coupon']));?>
 <div class='redmark'>*</div>
 <?php if(isset($errors['coupon'])) echo'<div class="addpromo" style="color:red">', $errors['coupon'],'</div>';?></div>
 </td></tr>
-
 <tr>
 <td>
 </td>
 <td align=left colspan=2 style='padding-right:-40px;'>
 <input type='submit' value='Add' class='button_form'>
-<?php //print render($form['submit']);?></td></tr>
+</td></tr>
 </table>
-<!--table align=left  style='width:100%;'>
-<tr><td class='formlabel' valign=middle>
-<div style='width:100%;'>
-<div class='fieldinnerdiv1'>Promotion Name</div>
-<div class='fieldinnerdiv2'>
-<?php print str_replace('</div>','',render($form['promoname']));?><span class='redmark'>*</span>
-<?php if(isset($errors['promoname'])) echo'<div class="addpromo" style="color:red">', $errors['promoname'],'</div>';?></div>
-</div><div style='clear:both'></div>
-</div>
-</td>
-</tr>
-<tr><td class='formlabel' valign=middle>
-<div style='width:100%;'>
-<div class='fieldinnerdiv1'>Promotion Description</div>
-<div class='fieldinnerdiv2'>
-<?php print str_replace('</div>','',render($form['promodescription']));?><span class='redmark'>*</span>
-<?php if(isset($errors['promodescription'])) echo'<div class="addpromo" style="color:red">', $errors['promodescription'],'</div>';?></div>
-</div><div style='clear:both'></div>
-</div>
-</td>
-</tr>
-<tr><td class='formlabel' valign=middle>
-<div style='width:100%;'>
-<div class='fieldinnerdiv1'>Marketing Placement for this promotion</div>
-<div class='fieldinnerdiv2'>
-<?php print str_replace('</div>','',render($form['marketingplacement']));?><span class='redmark'>*</span>
-<?php if(isset($errors['marketingplacement'])) echo'<div class="addpromo" style="color:red;width:500px;">', $errors['marketingplacement'],'</div>';?></div>
-</div><div style='clear:both'></div>
-</div>
-</td>
-</tr>
-<tr><td class='formlabel' valign=middle>
-<div style='width:100%;'>
-<div class='fieldinnerdiv1'>Promotion Type</div>
-<div class='fieldinnerdiv2'>
-<?php print str_replace('</div>','',render($form['promotype']));?><span class='redmark'>*</span>
-<?php if(isset($errors['promotype'])) echo'<div class="addpromo" style="color:red">', $errors['promotype'],'</div>';?></div>
-</div><div style='clear:both'></div>
-</div>
-</td>
-</tr>
-<tr><td class='formlabel' valign=middle>
-<div style='width:100%;'>
-<div class='fieldinnerdiv1'>channel</div>
-<div class='fieldinnerdiv2'>
-<?php print str_replace('</div>','',render($form['channel']));?><span class='redmark'>*</span>
-<?php if(isset($errors['channel'])) echo'<div class="addpromo" style="color:red">', $errors['channel'],'</div>';?></div>
-</div><div style='clear:both'></div>
-</div>
-</td>
-</tr>
-<tr><td class='formlabel' valign=middle>
-<div style='width:100%;'>
-<div class='fieldinnerdiv1'>Coupon</div>
-<div class='fieldinnerdiv2'>
-<?php print str_replace('</div>','',render($form['coupon']));?><span class='redmark'>*</span>
-<?php if(isset($errors['coupon'])) echo'<div class="addpromo" style="color:red">', $errors['coupon'],'</div>';?></div>
-</div><div style='clear:both'></div>
-</div>
-</td>
-</tr>
-
-<tr>
-
-<td align=left >
-<input type='submit' value='Add' class='button_form'>
-<?php //print render($form['submit']);?></td></tr>
-</table-->
 </div></div>
 <?php   
-	print render($form['report']); 
-	print render($form['form_id']);
-	print render($form['form_build_id']);
-	print render($form['form_token']);
+print render($form['report']); 
+print render($form['form_id']);
+print render($form['form_build_id']);
+print render($form['form_token']);
 
 
 
